@@ -12,8 +12,8 @@ A cross-platform mobile application that centralizes bug reporting, test case ma
 - **Pass/Fail Execution** — Mark test cases during execution for systematic validation
 - **Analytics Dashboard** — Visualize total bugs, resolution rates, and test case success metrics via charts
 - **Image Attachments** — Capture and upload screenshots directly from the device camera or gallery
-- **User Authentication** — Secure login and role-based access via Firebase Auth
-- **Real-time Sync** — All data is stored and retrieved in real time via Firestore
+- **User Authentication** — Secure login and role-based access via Supabase Auth
+- **Real-time Sync** — All data is stored and retrieved in real time via Supabase PostgreSQL
 - **AI Bug Analysis** *(optional)* — Intelligent severity prediction via OpenAI API integration
 
 ---
@@ -24,9 +24,9 @@ A cross-platform mobile application that centralizes bug reporting, test case ma
 |---|---|
 | Mobile Framework | React Native |
 | Navigation | React Navigation (Stack + Tab) |
-| Backend & Database | Firebase Firestore |
-| Authentication | Firebase Authentication |
-| File Storage | Firebase Cloud Storage |
+| Backend & Database | Supabase (PostgreSQL) |
+| Authentication | Supabase Auth |
+| File Storage | Supabase Storage |
 | Image Handling | Expo Image Picker |
 | Data Visualization | react-native-chart-kit |
 | AI Integration | OpenAI API *(optional)* |

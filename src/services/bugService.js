@@ -1,5 +1,5 @@
-// TODO: Integrate Firebase CRUD operations here
-// import { db } from './firebase';
+// TODO: Integrate Supabase CRUD operations here
+// import { supabase } from './supabase';
 
 export const subscribeToBugs = (callback) => {
   // Mock data for UI development

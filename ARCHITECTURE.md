@@ -30,11 +30,11 @@ mobile-testing-playground/
 │   │   ├── BugStack.jsx      # Stack navigator for bug-related screens
 │   │   └── TestStack.jsx     # Stack navigator for test case screens
 │   │
-│   ├── services/             # All external communication (Firebase, OpenAI)
-│   │   ├── firebase.js       # Firebase app initialisation and exports
+│   ├── services/             # All external communication (Supabase, OpenAI)
+│   │   ├── supabase.js       # Supabase client initialisation and exports
 │   │   ├── bugService.js     # CRUD operations for bug reports
 │   │   ├── testCaseService.js# CRUD operations for test cases
-│   │   ├── storageService.js # Image upload/download via Firebase Storage
+│   │   ├── storageService.js # Image upload/download via Supabase Storage
 │   │   └── aiService.js      # OpenAI API calls for bug analysis (optional)
 │   │
 │   ├── hooks/                # Custom React hooks
@@ -55,7 +55,7 @@ mobile-testing-playground/
 ├── .env.example              # Template for required environment variables
 ├── app.json                  # Expo project configuration
 ├── eas.json                  # EAS Build profiles (development, preview, production)
-├── firebase.rules            # Firestore security rules
+├── supabase/                 # Database migrations, seed data, and RLS policies
 └── package.json
 ```
 
@@ -67,9 +67,9 @@ mobile-testing-playground/
 
 The app uses local component state via `useState` and `useEffect` rather than a global store. The rationale: the data graph is shallow (bugs and test cases are independent lists), there is no complex cross-screen derived state, and a global store would add overhead without meaningful benefit at this scale.
 
-Shared data is accessed through **custom hooks** (`useBugs`, `useTestCases`, `useAuth`), which attach Firestore real-time listeners and return typed state. This keeps screens clean — they call a hook and receive data, loading flags, and error states.
+Shared data is accessed through **custom hooks** (`useBugs`, `useTestCases`, `useAuth`), which attach Supabase real-time listeners and return typed state. This keeps screens clean — they call a hook and receive data, loading flags, and error states.
 
-If the app grows to need cross-screen write operations (e.g., a tester assigning a bug from the dashboard that instantly updates the detail screen), the hooks pattern scales naturally by centralising the Firestore listener in a React Context provider.
+If the app grows to need cross-screen write operations (e.g., a tester assigning a bug from the dashboard that instantly updates the detail screen), the hooks pattern scales naturally by centralising the Supabase listener in a React Context provider.
 
 ### Component Design — Atomic + Screen Split
 
@@ -92,7 +92,7 @@ Open  →  In Progress  →  Resolved  →  Closed
 
 ## 🔌 API & Service Design
 
-All communication with Firebase and OpenAI lives in `src/services/`. Screens and hooks never import the Firebase SDK directly — they call a service function. This isolates external dependencies and makes services mockable in tests.
+All communication with Supabase and OpenAI lives in `src/services/`. Screens and hooks never import the Supabase SDK directly — they call a service function. This isolates external dependencies and makes services mockable in tests.
 
 ### Service Conventions
 
@@ -101,13 +101,12 @@ Each service file follows this structure:
 ```js
 // src/services/bugService.js
 
-import { db } from './firebase';
-import { collection, addDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { supabase } from './supabase';
 
 // Returns an unsubscribe function — caller is responsible for cleanup
 export const subscribeToBugs = (callback) => { ... };
 
-// Returns the new document reference
+// Returns the new row data
 export const createBug = async (bugData) => { ... };
 
 // Returns void; throws on failure
@@ -119,11 +118,11 @@ Rules:
 - Real-time subscriptions return an **unsubscribe function** — hooks call it in `useEffect` cleanup.
 - No UI logic (no `Alert`, no navigation) belongs inside a service.
 
-### Firebase Collections
+### Supabase Tables
 
-| Collection | Document shape | Notes |
+| Table | Row shape | Notes |
 |---|---|---|
-| `bugs` | `{ title, description, severity, status, steps, imageUrl, createdAt, updatedAt }` | `imageUrl` points to Firebase Storage |
+| `bugs` | `{ title, description, severity, status, steps, imageUrl, createdAt, updatedAt }` | `imageUrl` points to Supabase Storage |
 | `testCases` | `{ title, steps[], expectedResult, actualResult, status, createdAt }` | `status` is `pass`, `fail`, or `pending` |
 | `users` | `{ email, displayName, role }` | Role is `tester` or `developer`; used for future RBAC |
 
@@ -132,8 +131,8 @@ Rules:
 ```
 User selects image (Expo Image Picker)
   → storageService.uploadImage(uri)
-    → Converts URI to blob
-    → Uploads to Firebase Storage at bugs/{bugId}/{filename}
+    → Converts URI to blob/FormData
+    → Uploads to Supabase Storage at bugs/{bugId}/{filename}
     → Returns the public download URL
   → URL stored in the bug document as imageUrl
 ```
@@ -153,12 +152,12 @@ Displays a compact summary of a bug. Used in list views.
   title="Login button unresponsive on Android"
   severity="High"
   status="Open"
-  createdAt={timestamp}
+  createdAt={dateString}
   onPress={() => navigation.navigate('BugDetail', { bugId })}
 />
 ```
 
-Props: `title` (string), `severity` (string), `status` (string), `createdAt` (Firestore Timestamp), `onPress` (function).
+Props: `title` (string), `severity` (string), `status` (string), `createdAt` (String/Date), `onPress` (function).
 
 ---
 
@@ -193,7 +192,7 @@ Props: `type` (`bar` | `line` | `pie`), `labels` (string[]), `data` (number[]), 
 
 ### `EmptyState`
 
-Shown when a Firestore collection returns zero documents. Accepts a message and an optional CTA button.
+Shown when a Supabase query returns zero rows. Accepts a message and an optional CTA button.
 
 ```jsx
 <EmptyState

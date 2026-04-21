@@ -19,7 +19,7 @@ Ensure the following tools are installed before you begin:
 | CocoaPods | `>= 1.12` | iOS only — `sudo gem install cocoapods` |
 | Android Studio | Latest | Android only — includes the Android SDK and emulator |
 | Java (JDK) | `>= 17` | Android only — required by the Android build toolchain |
-| Firebase CLI | Latest | `npm install -g firebase-tools` |
+| Supabase CLI | Optional | `npm install -g supabase` |
 
 ---
 
@@ -35,12 +35,8 @@ Then fill in the values below:
 
 | Variable | Description | Where to Get It |
 |---|---|---|
-| `FIREBASE_API_KEY` | Firebase project API key | Firebase Console → Project Settings → General |
-| `FIREBASE_AUTH_DOMAIN` | Firebase auth domain | Firebase Console → Project Settings → General |
-| `FIREBASE_PROJECT_ID` | Firebase project ID | Firebase Console → Project Settings → General |
-| `FIREBASE_STORAGE_BUCKET` | Cloud Storage bucket URL | Firebase Console → Storage → Get Started |
-| `FIREBASE_MESSAGING_SENDER_ID` | FCM sender ID | Firebase Console → Project Settings → Cloud Messaging |
-| `FIREBASE_APP_ID` | Firebase app ID | Firebase Console → Project Settings → General |
+| `EXPO_PUBLIC_SUPABASE_URL` | Supabase project URL | Supabase Dashboard → Settings → API |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabase Anon Key | Supabase Dashboard → Settings → API |
 | `OPENAI_API_KEY` | OpenAI API key *(optional)* | [platform.openai.com](https://platform.openai.com) |
 
 > ⚠️ Never commit your `.env` file. It is already listed in `.gitignore`.
@@ -57,12 +53,11 @@ cd mobile-testing-playground
 npm install
 ```
 
-### 2. Configure Firebase
+### 2. Configure Supabase
 
-- Create a project at [Firebase Console](https://console.firebase.google.com)
-- Enable **Firestore**, **Authentication** (Email/Password), and **Storage**
-- Download `google-services.json` (Android) and `GoogleService-Info.plist` (iOS)
-- Place them in the project root (they are referenced by `app.json`)
+- Create a project at [Supabase Dashboard](https://supabase.com/dashboard)
+- Go to Project Settings -> API to copy your URL and Anon Key.
+- Place them inside your `.env` file as shown above.
 
 ### 3. Start the development server
 
@@ -208,21 +203,15 @@ cd ios && pod deintegrate && pod install
 
 ---
 
-### Firebase: `permission-denied` on Firestore
+### Supabase: `Row-Level Security (RLS) Policy` errors
 
-Check your Firestore security rules in the Firebase Console. For development, you can temporarily use:
+If you get permission denied when attempting to access your database from the client, make sure you have allowed reading/writing in your Supabase Dashboard via RLS Policies.
 
+For quick development purposes, you can run this SQL to bypass it temporarily:
+```sql
+alter table "public"."bugs" enable row level security;
+create policy "Enable all actions for everyone" on "public"."bugs" for all using (true) with check (true);
 ```
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}
-```
-
 > ⚠️ Lock down rules before deploying to production.
 
 ---
