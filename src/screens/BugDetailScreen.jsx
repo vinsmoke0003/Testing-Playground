@@ -5,9 +5,11 @@ import { typography } from '../constants/typography';
 import StatusBadge from '../components/StatusBadge';
 import { subscribeToBugs, updateBugStatus } from '../services/bugService';
 import { mockActivityFeed, mockDeviceMetadata } from '../services/mockData';
+import { useAuth } from '../contexts/AuthContext';
 
 const BugDetailScreen = ({ route, navigation }) => {
   const { bugId } = route.params;
+  const { role } = useAuth();
   const [bug, setBug] = useState(null);
 
   useEffect(() => {
@@ -56,7 +58,7 @@ const BugDetailScreen = ({ route, navigation }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Update Status</Text>
         <View style={styles.actionRow}>
-          {['Open', 'In Progress', 'Resolved', 'Closed'].map((status) => (
+          {(role === 'tester' ? ['Closed'] : ['In Progress', 'Resolved']).map((status) => (
             <TouchableOpacity 
               key={status} 
               style={[

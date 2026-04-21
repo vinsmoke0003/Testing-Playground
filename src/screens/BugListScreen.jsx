@@ -5,8 +5,10 @@ import { typography } from '../constants/typography';
 import BugCard from '../components/BugCard';
 import EmptyState from '../components/EmptyState';
 import { subscribeToBugs } from '../services/bugService';
+import { useAuth } from '../contexts/AuthContext';
 
 const BugListScreen = ({ navigation }) => {
+  const { role } = useAuth();
   const [bugs, setBugs] = useState([]);
   const [isSelectionMode, setIsSelectionMode] = useState(false);
   const [selectedBugs, setSelectedBugs] = useState([]);
@@ -59,9 +61,16 @@ const BugListScreen = ({ navigation }) => {
       ) : (
         <View style={styles.header}>
           <Text style={styles.headerTitle}>All Bugs</Text>
-          <TouchableOpacity onPress={() => setIsSelectionMode(true)}>
-            <Text style={styles.selectBtnText}>Select Items</Text>
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            {role === 'tester' && (
+              <TouchableOpacity style={styles.reportBtn} onPress={() => navigation.navigate('BugReport')}>
+                <Text style={styles.reportBtnText}>+ Report</Text>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity onPress={() => setIsSelectionMode(true)}>
+              <Text style={styles.selectBtnText}>Select Items</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
 
@@ -72,9 +81,9 @@ const BugListScreen = ({ navigation }) => {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={
           <EmptyState 
-            message="No bugs reported yet." 
-            actionLabel="Report a Bug" 
-            onAction={() => navigation.navigate('BugReport')} 
+            message={role === 'tester' ? "No bugs reported yet." : "No bugs assigned to you."} 
+            actionLabel={role === 'tester' ? "Report a Bug" : undefined} 
+            onAction={role === 'tester' ? () => navigation.navigate('BugReport') : undefined} 
           />
         }
       />
@@ -109,6 +118,22 @@ const styles = StyleSheet.create({
   headerTitle: {
     ...typography.h2,
     color: colors.textPrimary,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  reportBtn: {
+    backgroundColor: colors.surfaceLight,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  reportBtnText: {
+    ...typography.body,
+    fontWeight: 'bold',
+    color: colors.primary,
   },
   selectBtnText: {
     ...typography.body,

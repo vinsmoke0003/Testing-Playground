@@ -1,59 +1,46 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
+import { useAuth } from '../contexts/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { loginAsDeveloper, loginAsTester } = useAuth();
 
-  const handleLogin = () => {
-    // Fake login: dispatch to main app navigation (assuming AppNavigator handles this,
-    // or since this is a mock we can just navigate visually here).
-    // The AppNavigator in a real app would listen to `useAuth()`.
-    // We'll simulate authentication by simply navigating to MainTabs.
+  const handleLogin = (role) => {
+    if (role === 'developer') {
+      loginAsDeveloper();
+    } else {
+      loginAsTester();
+    }
     navigation.replace('MainTabs');
   };
 
   return (
-    <KeyboardAvoidingView 
-      style={styles.container} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-    >
+    <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Welcome Back</Text>
-        <Text style={styles.subtitle}>Sign in to Mobile Testing Playground</Text>
-        
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="tester@example.com"
-            placeholderTextColor={colors.textSecondary}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
+        <Text style={styles.title}>Mobile Testing Playground</Text>
+        <Text style={styles.subtitle}>Select your role to continue</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="••••••••"
-            placeholderTextColor={colors.textSecondary}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-        </View>
+        <TouchableOpacity 
+          style={[styles.button, styles.testerButton]} 
+          onPress={() => handleLogin('tester')} 
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonTitle}>I am a Tester</Text>
+          <Text style={styles.buttonSubtitle}>Find bugs, review fixes, and close tickets.</Text>
+        </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} activeOpacity={0.8}>
-          <Text style={styles.buttonText}>Sign In</Text>
+        <TouchableOpacity 
+          style={[styles.button, styles.developerButton]} 
+          onPress={() => handleLogin('developer')} 
+          activeOpacity={0.8}
+        >
+          <Text style={styles.buttonTitle}>I am a Developer</Text>
+          <Text style={styles.buttonSubtitle}>Fix bugs, resolve tickets, and pass testing.</Text>
         </TouchableOpacity>
       </View>
-    </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -71,40 +58,36 @@ const styles = StyleSheet.create({
     ...typography.h1,
     color: colors.primary,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
-    marginBottom: 32,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    ...typography.caption,
-    color: colors.textPrimary,
-    marginBottom: 8,
-    fontWeight: 'bold',
-  },
-  input: {
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 8,
-    padding: 14,
-    color: colors.textPrimary,
-    ...typography.body,
+    marginBottom: 48,
+    textAlign: 'center',
   },
   button: {
-    backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 24,
+    padding: 24,
+    borderRadius: 16,
+    marginBottom: 16,
+    borderWidth: 1,
   },
-  buttonText: {
-    ...typography.button,
-    color: '#ffffff',
+  testerButton: {
+    backgroundColor: colors.surface,
+    borderColor: colors.primary,
+  },
+  developerButton: {
+    backgroundColor: colors.surface,
+    borderColor: colors.info,
+  },
+  buttonTitle: {
+    ...typography.h2,
+    color: colors.textPrimary,
+    marginBottom: 8,
+  },
+  buttonSubtitle: {
+    ...typography.body,
+    color: colors.textSecondary,
   },
 });
 
