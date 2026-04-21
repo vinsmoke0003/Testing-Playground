@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 import ChartWidget from '../components/ChartWidget';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../contexts/AuthContext';
 
 import { mockBugTrends, mockTesterPerformance } from '../services/mockData';
 
@@ -14,12 +15,26 @@ const SummaryCard = ({ title, value, color }) => (
   </View>
 );
 
-const DashboardScreen = () => {
+const DashboardScreen = ({ navigation }) => {
+  const { role, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigation.replace('Login');
+  };
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.headerTitle}>Dashboard</Text>
-        <Text style={styles.subtitle}>Overview of project health</Text>
+        <View style={styles.headerRow}>
+          <View>
+            <Text style={styles.headerTitle}>Dashboard</Text>
+            <Text style={styles.subtitle}>Overview of project health</Text>
+          </View>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Switch Role</Text>
+          </TouchableOpacity>
+        </View>
 
         <View style={styles.cardsRow}>
           <SummaryCard title="Total Bugs" value="12" color={colors.primary} />
@@ -70,10 +85,28 @@ const styles = StyleSheet.create({
     ...typography.h1,
     color: colors.textPrimary,
   },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 24,
+  },
+  logoutButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: colors.surfaceLight,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  logoutText: {
+    ...typography.caption,
+    color: colors.primary,
+    fontWeight: 'bold',
+  },
   subtitle: {
     ...typography.body,
     color: colors.textSecondary,
-    marginBottom: 24,
   },
   cardsRow: {
     flexDirection: 'row',

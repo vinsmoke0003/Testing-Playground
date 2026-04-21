@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../constants/colors';
 
 import LoginScreen from '../screens/LoginScreen';
@@ -29,22 +30,22 @@ const MainTabs = () => {
       <Tab.Screen 
         name="Dashboard" 
         component={DashboardScreen} 
-        options={{ tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }} // Placeholder for actual icons
+        options={{ tabBarIcon: ({ color, size }) => <Ionicons name="pie-chart" size={size} color={color} />, tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold' } }}
       />
       <Tab.Screen 
         name="BugsTab" 
         component={BugStack} 
-        options={{ title: 'Bugs', tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }}
+        options={{ title: 'Bugs', tabBarIcon: ({ color, size }) => <Ionicons name="bug" size={size} color={color} />, tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold' } }}
       />
       <Tab.Screen 
         name="TestsTab" 
         component={TestStack} 
-        options={{ title: 'T.Cases', tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }}
+        options={{ title: 'T.Cases', tabBarIcon: ({ color, size }) => <Ionicons name="flask" size={size} color={color} />, tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold' } }}
       />
       <Tab.Screen 
         name="SettingsTab" 
         component={SettingsScreen} 
-        options={{ title: 'Settings', tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }}
+        options={{ title: 'Settings', tabBarIcon: ({ color, size }) => <Ionicons name="settings" size={size} color={color} />, tabBarLabelStyle: { fontSize: 11, fontWeight: 'bold' } }}
       />
     </Tab.Navigator>
   );
