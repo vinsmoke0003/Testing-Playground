@@ -5,6 +5,8 @@ import { typography } from '../constants/typography';
 import ChartWidget from '../components/ChartWidget';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { mockBugTrends, mockTesterPerformance } from '../services/mockData';
+
 const SummaryCard = ({ title, value, color }) => (
   <View style={[styles.card, { borderTopColor: color }]}>
     <Text style={styles.cardTitle}>{title}</Text>
@@ -33,13 +35,22 @@ const DashboardScreen = () => {
             data={[4, 2, 8, 3]} 
           />
         </View>
-        
+
         <View style={styles.chartContainer}>
           <ChartWidget 
-            title="Test Cases Execution" 
+            title="Bug Trends (Over Time)" 
+            type="line" 
+            labels={mockBugTrends.labels} 
+            data={mockBugTrends.data} 
+          />
+        </View>
+
+        <View style={styles.chartContainer}>
+          <ChartWidget 
+            title="Tester Performance (Bugs Found)" 
             type="bar" 
-            labels={['Pass', 'Fail', 'Pending']} 
-            data={[14, 2, 8]} 
+            labels={mockTesterPerformance.labels} 
+            data={mockTesterPerformance.data} 
           />
         </View>
       </ScrollView>

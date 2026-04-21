@@ -6,6 +6,7 @@ import { colors } from '../constants/colors';
 
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 import BugStack from './BugStack';
 import TestStack from './TestStack';
 
@@ -39,6 +40,11 @@ const MainTabs = () => {
         name="TestsTab" 
         component={TestStack} 
         options={{ title: 'T.Cases', tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }}
+      />
+      <Tab.Screen 
+        name="SettingsTab" 
+        component={SettingsScreen} 
+        options={{ title: 'Settings', tabBarIcon: () => null, tabBarLabelStyle: { fontSize: 14, fontWeight: 'bold' } }}
       />
     </Tab.Navigator>
   );

@@ -4,6 +4,7 @@ import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 import StatusBadge from '../components/StatusBadge';
 import { subscribeToBugs, updateBugStatus } from '../services/bugService';
+import { mockActivityFeed, mockDeviceMetadata } from '../services/mockData';
 
 const BugDetailScreen = ({ route, navigation }) => {
   const { bugId } = route.params;
@@ -79,6 +80,31 @@ const BugDetailScreen = ({ route, navigation }) => {
         <View style={styles.imagePlaceholder}>
           <Text style={styles.placeholderText}>[Image Placeholder]</Text>
         </View>
+      </View>
+
+      {/* Device Metadata Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Device Metadata</Text>
+        <View style={styles.metadataCard}>
+          <Text style={styles.metadataText}><Text style={styles.bold}>OS:</Text> {mockDeviceMetadata.os}</Text>
+          <Text style={styles.metadataText}><Text style={styles.bold}>Device:</Text> {mockDeviceMetadata.device}</Text>
+          <Text style={styles.metadataText}><Text style={styles.bold}>RAM:</Text> {mockDeviceMetadata.ram}</Text>
+          <Text style={styles.metadataText}><Text style={styles.bold}>Network:</Text> {mockDeviceMetadata.network}</Text>
+        </View>
+      </View>
+
+      {/* Activity Feed Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Activity & Comments</Text>
+        {mockActivityFeed.map((activity) => (
+          <View key={activity.id} style={styles.activityItem}>
+            <View style={styles.activityHeader}>
+              <Text style={styles.activityUser}>{activity.user}</Text>
+              <Text style={styles.activityTime}>{activity.time}</Text>
+            </View>
+            <Text style={styles.activityText}>{activity.text}</Text>
+          </View>
+        ))}
       </View>
     </ScrollView>
   );
@@ -184,6 +210,47 @@ const styles = StyleSheet.create({
   placeholderText: {
     ...typography.body,
     color: colors.textSecondary,
+  },
+  metadataCard: {
+    backgroundColor: colors.surfaceLight,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  metadataText: {
+    ...typography.body,
+    color: colors.textPrimary,
+    marginBottom: 4,
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  activityItem: {
+    backgroundColor: colors.surface,
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 8,
+  },
+  activityHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  activityUser: {
+    ...typography.caption,
+    fontWeight: 'bold',
+    color: colors.primary,
+  },
+  activityTime: {
+    ...typography.caption,
+    color: colors.textSecondary,
+  },
+  activityText: {
+    ...typography.body,
+    color: colors.textPrimary,
   },
 });
 

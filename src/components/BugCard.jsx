@@ -4,9 +4,13 @@ import StatusBadge from './StatusBadge';
 import { colors } from '../constants/colors';
 import { typography } from '../constants/typography';
 
-const BugCard = ({ title, severity, status, createdAt, onPress }) => {
+const BugCard = ({ title, severity, status, createdAt, onPress, selected }) => {
   return (
-    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+    <TouchableOpacity 
+      style={[styles.card, selected && styles.cardSelected]} 
+      onPress={onPress} 
+      activeOpacity={0.7}
+    >
       <View style={styles.headerRow}>
         <Text style={styles.title} numberOfLines={2}>
           {title}
@@ -34,6 +38,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderWidth: 1,
     borderColor: colors.border,
+  },
+  cardSelected: {
+    borderColor: colors.primary,
+    borderWidth: 2,
+    backgroundColor: colors.surfaceLight,
   },
   headerRow: {
     marginBottom: 16,
